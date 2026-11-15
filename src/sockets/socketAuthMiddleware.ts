@@ -17,10 +17,7 @@ export const socketAuthMiddleware = (
       return next(new Error('Authentication required'));
     }
 
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_ACCESS_SECRET!
-    ) as JwtPayload;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
 
     socket.data.userId = decoded.userId;
     socket.data.username = decoded.username;
