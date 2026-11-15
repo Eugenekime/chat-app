@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 interface JwtPayload {
   userId: string;
   username: string;
+  tokenType: string;
 }
 
 export const socketAuthMiddleware = (
@@ -18,6 +19,14 @@ export const socketAuthMiddleware = (
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+
+    if (
+      typeof decoded === 'string' ||
+      typeof decoded.userId !== 'string' ||
+      decoded.tokenType !== 'access'
+    ) {
+      return next(new Error('Invalid token'));
+    }
 
     socket.data.userId = decoded.userId;
     socket.data.username = decoded.username;
