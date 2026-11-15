@@ -3,9 +3,9 @@ import { hashToken } from '../utils/hash.js';
 
 import { generateAccessToken, generateRefreshToken } from '../utils/jwt.js';
 
-export const createTokenPair = async (userId: string) => {
+export const createTokenPair = async (userId: string, username: string) => {
   // generateAccessToken()
-  const accessToken = generateAccessToken(userId);
+  const accessToken = generateAccessToken(userId, username);
   // generateRefreshToken()
   const refreshToken = generateRefreshToken(userId);
   // hashToken()

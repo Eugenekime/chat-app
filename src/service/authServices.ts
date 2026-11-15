@@ -30,5 +30,6 @@ export const loginService = async (email: string, password: string) => {
   if (!isPasswordValid) {
     throw new AppError('Invalid email or password', 401);
   }
+
   return user;
 };

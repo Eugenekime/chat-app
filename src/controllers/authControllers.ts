@@ -23,7 +23,8 @@ export const registerController = async (
     const { username, email, password } = req.body;
     const user = await registerService(username, password, email);
     const { accessToken, refreshToken } = await createTokenPair(
-      user._id.toString()
+      user._id.toString(),
+      username
     );
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
@@ -97,7 +98,10 @@ export const refreshController = async (
       });
     }
 
-    const newAccessToken = generateAccessToken(decoded.userId);
+    const newAccessToken = generateAccessToken(
+      decoded.userId,
+      decoded.username
+    );
     const newRefreshToken = generateRefreshToken(decoded.userId);
 
     await RefreshToken.create({
@@ -130,8 +134,13 @@ export const loginController = async (
   const { email, password } = req.body;
   try {
     const user = await loginService(email, password);
+    if (!user.username) {
+      throw new AppError('Username is missing', 400);
+    }
+
     const { accessToken, refreshToken } = await createTokenPair(
-      user._id.toString()
+      user._id.toString(),
+      user.username
     );
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
