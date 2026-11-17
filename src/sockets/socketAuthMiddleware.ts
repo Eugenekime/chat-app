@@ -1,4 +1,4 @@
-import { Socket } from 'socket.io';
+import type { Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
 
 interface JwtPayload {

@@ -14,6 +14,9 @@ import { registerSocketHandlers } from './sockets/socketHandlers.js';
 
 import authRoute from './routers/authRoutes.js';
 import roomRoute from './routers/roomRoutes.js';
+import notificationRouter from './routers/notificationRoutes.js';
+
+import { getUnreadNotificationCountService } from './service/notificationServices.js';
 
 const app = express();
 const http = createServer(app);
@@ -26,15 +29,31 @@ const io = new Server(http, {
 
 io.use(socketAuthMiddleware);
 
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
   console.log('User connected:', socket.data.userId);
+  socket.join(`user:${socket.data.userId}`);
 
+  try {
+    const unread = await getUnreadNotificationCountService(socket.data.userId);
+
+    socket.emit('notification:count', { unread });
+  } catch (error) {
+    console.error('Failed to get unread notification count:', error);
+  }
   registerSocketHandlers(io, socket);
 });
 
 app.use(express.json());
 app.use(cookieParser());
 
+app.get('/api/health', (_req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.use('/api', notificationRouter(io));
 app.use('/api', authRoute);
 app.use('/api', roomRoute);
 
