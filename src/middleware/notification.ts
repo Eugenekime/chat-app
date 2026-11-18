@@ -8,7 +8,7 @@ export const notificationQueryValidate = async (
   next: NextFunction
 ) => {
   try {
-    const { limit, unReadOnly } = req.query;
+    const { limit, unreadOnly } = req.query;
 
     if (limit !== undefined) {
       const parsedLimit = Number(limit);
@@ -25,11 +25,11 @@ export const notificationQueryValidate = async (
     }
 
     if (
-      unReadOnly !== undefined &&
-      unReadOnly !== 'true' &&
-      unReadOnly !== 'false'
+      unreadOnly !== undefined &&
+      unreadOnly !== 'true' &&
+      unreadOnly !== 'false'
     ) {
-      throw new AppError('unReadOnly must be true or false', 400);
+      throw new AppError('unreadOnly must be true or false', 400);
     }
 
     next();
